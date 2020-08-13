@@ -1,0 +1,128 @@
+Question 1: Implement an algorithm to determine if a string has all unique characters
+You cannot use additional data structures (must use arrays)
+
+Solution in words: First ask if it the string is an ASCII string or a Unicode string
+Assuming its an ASCII:
+
+  one solution is make an array of bools, where the flag
+at index i indicates if character i in the alphabet is in the string.
+If you see the character again, you can return false.
+
+Can also return false if the string length is greater than the number
+of unique characters in the alphabet
+
+
+CODE:
+
+  boolean isUniqueChars(String str){
+    if(str.length() > 128) return false;
+
+    boolean[] char_set = new boolean[128];
+    for(int i=0; i< str.length(); i++){
+        int val = str.CharAt(i);
+        if(char_set[val]) { // already found this char in string
+          return false;
+        }
+        char_set[val] = true;
+    }
+    return true;
+  }
+
+COMPLEXITY: O(n) where n is the length of the string.
+Space complexity is O(1),
+could argue time complexity is O(1) because the loop won't
+iterate more than 128 characters
+
+
+Question 2: Given two strings,
+write a method to decide if one is a permutation of the other
+
+ask if permutation comparison is case sensitive. Is God a permutation of dog?
+Additionally, ask if whitespace is significant.
+
+CODE:
+
+solution 1: Sort the strings:
+If the two strings a permutations, then we know they have the same characters,
+but in different orders. Therefore, sorting the strings will put the two permutations in the
+same order and compare the sorted versions of the strings
+
+String sort(String s){
+    char[] content = s.toCharArray();
+    java.util.Arrays.sort(content); // sort the string
+    return new String(content); // return the sorted string
+}
+
+boolean permutation(String s, String t){
+    if (s.length() != t.length()) {
+    return false;  // if the two strings lengths don't match, you're done
+    }
+
+    return sort(s).equals(sort(t)); // if the two strings are equal then you are done
+}
+
+
+
+
+solution 2: check if the two string have identical character counts
+
+boolean permutation(String s, String t){
+      if (s.length() != t.length()) {
+        return false;
+      }
+
+      int[] letters = new int[128];
+
+      char[] s_array = s.toCharArray();
+      for (char c: s_array ) { // counter number of each char in s
+        letters[c]++;
+      }
+
+      for (int i =0; i< t.length(); i++){
+          int c = (int) t.charAt (i);
+          letters[c]--;
+          if (letters[c]<0) {
+            return false;
+          }
+      }
+
+      return true;
+}
+
+
+Question 3: Replace all spaces in a string with '%20', you are given the length of string
+input:  "Mr John Smith        ", 13
+output: "Mr%20John%20Smith"
+
+solution: a common approach in string manip is to edit the string from the end
+and work backwards. This is beneficial because we have an extra buffer/space at the end,
+which allow us to change characters without worrying about what we're overwriting
+
+The solution employs a two-scan approach. In the first scan, we count the number of spaces.
+By tripling this numbers, we can computer how many extra chars we will have in the final string.
+In the second pass, which is done in reverse order, we actually edit the string. When we see a space,
+we replace it with %20. If there is no space, then we copy the original character.
+
+CODE:
+
+void replaceSpaces ( char[] str, int trueLength){
+    int spaceCount = 0, index, i =0;
+    for (i = 0; i< truelength; i++){
+        if (str[i] == ' '){
+            spaceCount++;
+        }
+    }
+    index = trueLength + spaceCount *2;
+    if (trueLength < str.length) str[trueLength] = '\0'; // end array
+    for (i = trueLength - 1; i >= 0; i--){
+        if (str[i] == ' ') {
+          str[index - 1] = '0';
+          str[index - 2] = '2';
+          str[index - 3] = '%';
+          index -= 3;
+        } else {
+            str[index - 1] = str[i]
+            index--;
+        }
+    }
+}
